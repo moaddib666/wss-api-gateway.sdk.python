@@ -1,5 +1,7 @@
 from typing import Type
-from kombu import Producer, Connection, Exchange
+
+from kombu import Connection, Exchange, Producer
+
 from margay.sdk.config import Config
 from margay.sdk.logger import SDKLogger
 
@@ -17,15 +19,22 @@ class Publisher:
 
     def publish_raw(self, msg: str, sender: str, recipient: str):
         with self.connection.channel() as channel:
-            SDKLogger.debug(f"Setup producer with {self.exchange} serialized by `{self.conf.protocol.serializer}`")
+            SDKLogger.debug(
+                f"Setup producer with {self.exchange} serialized by `{self.conf.protocol.serializer}`"
+            )
             producer = Producer(
-                channel, serializer=self.conf.protocol.serializer, exchange=self.exchange, auto_declare=True
+                channel,
+                serializer=self.conf.protocol.serializer,
+                exchange=self.exchange,
+                auto_declare=True,
             )
             headers = {
-                    self.conf.protocol.sender: sender,
-                    self.conf.protocol.recipient: recipient,
-                }
-            SDKLogger.debug(f"Publishing RAW message body:`{msg}`, headers: `{headers}`")
+                self.conf.protocol.sender: sender,
+                self.conf.protocol.recipient: recipient,
+            }
+            SDKLogger.debug(
+                f"Publishing RAW message body:`{msg}`, headers: `{headers}`"
+            )
             producer.publish(
                 msg,
                 retry=True,

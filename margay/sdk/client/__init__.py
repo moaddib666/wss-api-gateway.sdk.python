@@ -1,4 +1,5 @@
 import websocket
+
 from margay.sdk.logger import SDKLogger
 
 
@@ -7,9 +8,7 @@ class Client:
         self.opened = False
         self.ws = websocket.create_connection(
             dsn,
-            header={
-                 'Authorization': f'Bearer {token}'
-            },
+            header={"Authorization": f"Bearer {token}"},
         )
 
     def send_message(self, msg: str):

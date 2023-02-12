@@ -1,6 +1,6 @@
 from typing import Type
 
-from kombu import Exchange, Queue, Connection
+from kombu import Connection, Exchange, Queue
 from kombu.mixins import ConsumerMixin
 
 from margay.sdk.config import Config
@@ -28,11 +28,15 @@ class Subscriber(ConsumerMixin):
         self.connection = Connection(self.conf.dsn)
         SDKLogger.debug(f"Setup exchange to `{self.conf.outbox}`")
         self.exchange = Exchange(self.conf.outbox, "topic", durable=True)
-        SDKLogger.debug(f"Bind queue `{self.conf.queue}` to exchange `{self.conf.outbox}`")
+        SDKLogger.debug(
+            f"Bind queue `{self.conf.queue}` to exchange `{self.conf.outbox}`"
+        )
         self.queue = Queue(self.conf.queue, exchange=self.exchange)
 
     def on_message(self, entry):
-        SDKLogger.debug(f"Received RAW message, body: `{entry.body}`, headers:`{entry.headers}`")
+        SDKLogger.debug(
+            f"Received RAW message, body: `{entry.body}`, headers:`{entry.headers}`"
+        )
         try:
             message = self.Message.from_transport(entry)
         except self.Message.InvalidMessage as err:
