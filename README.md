@@ -9,7 +9,8 @@ Architecture part described in Margay Gateway core [repository](https://github.c
 - Setup Subscriber or use example `examples/vanilla_worker.py` or `examples/vanilla_publisher.py` 
 - Setup client or use example `examples/vanilla_client.py`
   - You can generate auth token by using [cli](https://github.com/moaddib666/wss-api-gateway.go/blob/main/cmd/indentety_provider/encoder.go)
-  - Or just use your own identity provider
+  - By using sdk auth
+  - By using external indentety provider
 - Connect your backend
   - Basically that means:
     - You subscribe RMQ topic with your `CustomQueue` and listen for events
@@ -66,6 +67,18 @@ class EventPublisher(Publisher):
     origin = "MyAwsomeMss"
     def publish(self, event: Event, recipient: str):
         self.publish_raw(event.serialize(), self.origin, recipient)
+```
+
+## Auth
+### JWT
+```python
+from margay.sdk.auth import JWTAuth
+user = "John Snow"
+secret = "SuperSecret"
+identity_provider = JWTAuth(secret)
+token = identity_provider.issue_token(user)
+payload = identity_provider.verify_token(token, user)
+print(payload)
 ```
 
 ## Debugging
